@@ -27,7 +27,6 @@ namespace BoardingParty
             Size = size;
             Entities = new List<Entity>();
             
-            Entities.Add(new Barrel(this, 200) { Position = Size / 2 });
             /*Entities.Add(new Barrel(this, 200) { Position = Size / 2 + new Vector(300, 0), Friction = 0.003 });
             Entities.Add(new Barrel(this, 200) { Position = Size / 2 + new Vector(0, 500), Friction = 0 });
             Entities.Add(new Barrel(this, 200) { Position = Size / 2 + new Vector(500, 0), Friction = 0 });
@@ -68,11 +67,11 @@ namespace BoardingParty
                     Entities.RemoveAt(i);
             }
 
-            while (BarrelCount() < 6)
+            while (BarrelCount() < 4)
             {
                 double x = (Random.NextDouble() * 2 - 1) * Size.X * 0.7;
                 double vy = 2000 + 500 * Random.NextDouble();
-                Entities.Add(new Barrel(this, 200) { Position = new Vector(x, -Size.Y - 1000), Velocity = new Vector(0, vy) });
+                Entities.Add(new Barrel(this, 250) { Position = new Vector(x, -Size.Y - 1000), Velocity = new Vector(0, vy) });
             }
 
             while (TeamSize(1) < 1)
@@ -82,7 +81,7 @@ namespace BoardingParty
                 Entities.Add(Fighter.CreatePlayer(this, new Vector(x, Size.Y * 1.2), new Vector(0, -vy)));
             }
 
-            while (TeamSize(2) < 4)
+            while (TeamSize(2) < 3)
             {
                 double x = (Random.NextDouble() * 2 - 1) * Size.X * 0.7;
                 double vy = 2000 + 500 * Random.NextDouble();

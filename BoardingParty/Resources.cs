@@ -8,6 +8,8 @@ namespace BoardingParty
         {
             public static Texture2D Pixel;
             public static Texture2D Circle;
+
+            public static Texture2D Pirate;
         }
     }
 }

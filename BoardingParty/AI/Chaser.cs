@@ -20,7 +20,7 @@ namespace BoardingParty.AI
             }
 
             if (targeting.LengthSquared > 0.00001)
-                return targeting.Normalized;
+                return targeting.Normalized * 0.7;
             else
                 return null;
         }

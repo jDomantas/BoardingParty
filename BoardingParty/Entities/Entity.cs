@@ -17,6 +17,7 @@ namespace BoardingParty.Entities
         public double Friction = 1000;
         public double Mass = 1;
         public bool Dead;
+        public double Rotation = 0;
 
         public Entity(World world, double radius)
         {
@@ -26,6 +27,9 @@ namespace BoardingParty.Entities
         
         public virtual void Update(double dt)
         {
+            if (Velocity.X != 0 || Velocity.Y != 0)
+                Rotation = Math.Atan2(Velocity.Y, Velocity.X);
+
             Velocity += World.Gravity * 2;
 
             Velocity *= 0.995;

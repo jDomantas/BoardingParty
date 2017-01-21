@@ -34,7 +34,7 @@ namespace BoardingParty
         {
             base.Initialize();
 
-            world = new World(new Vector(3300 * 1.8f, 3000 * 1.8f));
+            world = new World(new Vector(3300 * 1.3f, 3000 * 1.3f));
             
             base.Initialize();
         }
@@ -45,6 +45,8 @@ namespace BoardingParty
 
             Resources.Textures.Pixel = new Texture2D(GraphicsDevice, 1, 1);
             Resources.Textures.Pixel.SetData(new Color[] { Color.White });
+
+            Resources.Textures.Pirate = Content.Load<Texture2D>("pirato1");
 
             int radius = 50;
             Resources.Textures.Circle = new Texture2D(GraphicsDevice, radius * 2, radius * 2);

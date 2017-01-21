@@ -79,11 +79,30 @@ namespace BoardingParty.Entities
             Rectangle rect = new Rectangle(x, y, d, d);
             int center = Resources.Textures.Circle.Width / 2;
 
-            var color = HasControl ? Color.Black : new Color(64, 64, 64);
+            /*var color = HasControl ? Color.Black : new Color(64, 64, 64);
             if (Team == 2) color = HasControl ? Color.Blue : new Color(64, 64, 255);
             sb.Draw(Resources.Textures.Circle, rect, null, color, 0, new Vector2(center, center), SpriteEffects.None, 0);
             if (AI is PlayerController)
-                sb.Draw(Resources.Textures.Circle, new Rectangle(x, y, d / 3, d / 3), null, Color.Yellow, 0, new Vector2(center, center), SpriteEffects.None, 0);
+                sb.Draw(Resources.Textures.Circle, new Rectangle(x, y, d / 3, d / 3), null, Color.Yellow, 0, new Vector2(center, center), SpriteEffects.None, 0);*/
+            sb.Draw(
+                Resources.Textures.Pirate,
+                new Rectangle(x, y, d * 7 / 4, d * 7 / 4),
+                null,
+                Color.White,
+                (float)Rotation - MathHelper.PiOver2,
+                new Vector2(Resources.Textures.Pirate.Width / 2, Resources.Textures.Pirate.Height / 2),
+                SpriteEffects.None,
+                0);
+
+            /*sb.Draw(
+                Resources.Textures.Circle,
+                new Rectangle(x, y, d, d),
+                null,
+                Color.White * 0.4f,
+                0,
+                new Vector2(Resources.Textures.Circle.Width / 2, Resources.Textures.Circle.Height / 2),
+                SpriteEffects.None,
+                0);*/
         }
 
         public override void Hit(Vector deltav)
@@ -106,11 +125,14 @@ namespace BoardingParty.Entities
 
         public static Fighter CreateEnemy(World world, Vector position, Vector velocity)
         {
-            int aiType = world.Random.Next(6);
-            FighterAI ai;
-            if (aiType < 4) ai = new Avoider();
-            else if (aiType < 5) ai = new Chaser();
-            else ai = new BarrelLauncher();
+            FighterAI ai = null;
+            do
+            {
+                int aiType = world.Random.Next(3);
+                if (aiType == 0 && world.Entities.All(e => !(e is Fighter) || !((e as Fighter).AI is Avoider))) ai = new Avoider();
+                if (aiType == 1 && world.Entities.All(e => !(e is Fighter) || !((e as Fighter).AI is Chaser))) ai = new Chaser();
+                if (aiType == 2 && world.Entities.All(e => !(e is Fighter) || !((e as Fighter).AI is BarrelLauncher))) ai = new BarrelLauncher();
+            } while (ai == null);
 
             return new Fighter(world, ai, 2)
             {
