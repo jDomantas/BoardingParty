@@ -26,6 +26,8 @@ namespace BoardingParty
             Random = new Random();
             Size = size;
             Entities = new List<Entity>();
+
+            Entities.Add(new Obstacle(this, new Vector(0, -Size.Y), 1000));
             
             /*Entities.Add(new Barrel(this, 200) { Position = Size / 2 + new Vector(300, 0), Friction = 0.003 });
             Entities.Add(new Barrel(this, 200) { Position = Size / 2 + new Vector(0, 500), Friction = 0 });
@@ -116,9 +118,16 @@ namespace BoardingParty
                 double dist = diff.Length;
                 Vector fix = diff.Normalized * (a.Radius + b.Radius - dist) / 2;
 
-                b.Position += fix;
-                a.Position -= fix;
-                
+                if (a is Obstacle)
+                    b.Position += fix * 2;
+                else if (b is Obstacle)
+                    a.Position -= fix * 2;
+                else
+                {
+                    b.Position += fix;
+                    a.Position -= fix;
+                }
+
                 double totalMass = a.Mass + b.Mass;
                 Vector av = a.Velocity - 2 * b.Mass * (a.Velocity - b.Velocity).Dot(a.Position - b.Position) * (a.Position - b.Position) / (totalMass * (a.Position - b.Position).LengthSquared);
                 Vector bv = b.Velocity - 2 * a.Mass * (b.Velocity - a.Velocity).Dot(b.Position - a.Position) * (b.Position - a.Position) / (totalMass * (a.Position - b.Position).LengthSquared);
@@ -134,6 +143,9 @@ namespace BoardingParty
 
         private void ResolveCollisions(Entity a)
         {
+            if (a is Obstacle)
+                return;
+
             if (a.Position.X - a.Radius < -Size.X)
             {
                 if (ShouldKill(-a.Velocity.X, -Gravity.X))
@@ -192,19 +204,34 @@ namespace BoardingParty
 
         public void Draw(SpriteBatch sb)
         {
-            double viewHeight = Size.Y * 2.2;
+            double viewHeight = Size.Y * 2.3;
             double viewScale = BoardingGame.ScreenHeight / viewHeight;
             
             Matrix scale = Matrix.CreateScale((float)viewScale);
-            Matrix translation = Matrix.CreateTranslation(BoardingGame.ScreenWidth / 2f, BoardingGame.ScreenHeight / 2f, 0);
+            Matrix translation = Matrix.CreateTranslation(BoardingGame.GameRenderWidth / 2f, BoardingGame.GameRenderHeight / 2f, 0);
             
             sb.Begin(transformMatrix: scale * translation);
-            
-            Color deckColor = new Color(207, 161, 119);
-            sb.Draw(Resources.Textures.Pixel, new Rectangle((int)-Size.X, (int)-Size.Y, (int)(Size.X * 2), (int)(Size.Y * 2)), deckColor);
+
+            Rectangle deckRect = new Rectangle(0, 0, (int)(Size.X * 2 * 1.4285), (int)(Size.X * 2 * 1.4285));
+            Vector2 center = new Vector2(1000, 1040);
+            sb.Draw(Resources.Textures.Deck, deckRect, null, Color.White, 0, center, SpriteEffects.None, 0);
+
+            //Color deckColor = new Color(207, 161, 119);
+            //sb.Draw(Resources.Textures.Pixel, new Rectangle((int)-Size.X, (int)-Size.Y, (int)(Size.X * 2), (int)(Size.Y * 2)), deckColor * 0.6f);
 
             for (int i = 0; i < Entities.Count; i++)
                 Entities[i].Draw(sb);
+
+            // back sail
+            sb.Draw(Resources.Textures.Sail, deckRect, null, Color.White, 0, center, SpriteEffects.None, 0);
+
+            // front sail
+            deckRect.Y -= (int)(Size.Y * 2 * 1.19);
+            sb.Draw(Resources.Textures.Sail, deckRect, null, Color.White, 0, center, SpriteEffects.None, 0);
+
+            for (int i = 0; i < Entities.Count; i++)
+                if (Entities[i] is Obstacle)
+                    Entities[i].Draw(sb);
 
             //sb.Draw(Resources.Textures.Pixel, new Rectangle((int)(Gravity.X * 30) - 100, (int)(Gravity.Y * 30) - 100, 200, 200), Color.Blue);
 

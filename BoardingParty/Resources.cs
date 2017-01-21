@@ -10,6 +10,9 @@ namespace BoardingParty
             public static Texture2D Circle;
 
             public static Texture2D Pirate;
+
+            public static Texture2D Deck;
+            public static Texture2D Sail;
         }
     }
 }

@@ -15,6 +15,9 @@ namespace BoardingParty
         public static int ScreenWidth = 1280;
         public static int ScreenHeight = 720;
 
+        public static int GameRenderWidth = 1280;
+        public static int GameRenderHeight = 900;
+
         RenderTarget2D renderTarget;
 
         float time;
@@ -34,7 +37,7 @@ namespace BoardingParty
         {
             base.Initialize();
 
-            world = new World(new Vector(3300 * 1.3f, 3000 * 1.3f));
+            world = new World(new Vector(4550, 3500));
             
             base.Initialize();
         }
@@ -47,6 +50,9 @@ namespace BoardingParty
             Resources.Textures.Pixel.SetData(new Color[] { Color.White });
 
             Resources.Textures.Pirate = Content.Load<Texture2D>("pirato1");
+
+            Resources.Textures.Deck = Content.Load<Texture2D>("deck");
+            Resources.Textures.Sail = Content.Load<Texture2D>("sales");
 
             int radius = 50;
             Resources.Textures.Circle = new Texture2D(GraphicsDevice, radius * 2, radius * 2);
@@ -70,7 +76,7 @@ namespace BoardingParty
                 }
             Resources.Textures.Circle.SetData(color);
 
-            renderTarget = new RenderTarget2D(GraphicsDevice, ScreenWidth, ScreenHeight);
+            renderTarget = new RenderTarget2D(GraphicsDevice, GameRenderWidth, GameRenderHeight);
         }
         
         protected override void Update(GameTime gameTime)
@@ -97,7 +103,7 @@ namespace BoardingParty
 
             Matrix w = Matrix.Identity;
             Vector2 camera = Vector2.Zero;
-            camera = new Vector2((float)world.Gravity.X, (float)world.Gravity.Y) / -20000;
+            camera = new Vector2((float)world.Gravity.X, (float)world.Gravity.Y) / -25000;
             Matrix view = Matrix.CreateLookAt(new Vector3(camera, 2.4f), Vector3.Zero, Vector3.UnitY);
             Matrix projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.PiOver4, 1, 0.1f, 10000f);
             

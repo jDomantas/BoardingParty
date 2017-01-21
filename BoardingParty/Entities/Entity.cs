@@ -54,7 +54,7 @@ namespace BoardingParty.Entities
             Rectangle rect = new Rectangle(x, y, d, d);
             int center = Resources.Textures.Circle.Width / 2;
             
-            sb.Draw(Resources.Textures.Circle, rect, null, Color.Black, 0, new Vector2(center, center), SpriteEffects.None, 0);
+            sb.Draw(Resources.Textures.Circle, rect, null, Color.Black * 0.6f, 0, new Vector2(center, center), SpriteEffects.None, 0);
         }
     }
 }
