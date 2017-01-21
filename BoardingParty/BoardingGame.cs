@@ -50,6 +50,7 @@ namespace BoardingParty
             Resources.Textures.Pixel.SetData(new Color[] { Color.White });
 
             Resources.Textures.Pirate = Content.Load<Texture2D>("pirato1");
+            Resources.Textures.Defender = Content.Load<Texture2D>("pirato2");
 
             Resources.Textures.Deck = Content.Load<Texture2D>("deck");
             Resources.Textures.Sail = Content.Load<Texture2D>("sales");

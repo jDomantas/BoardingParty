@@ -85,7 +85,7 @@ namespace BoardingParty.Entities
             if (AI is PlayerController)
                 sb.Draw(Resources.Textures.Circle, new Rectangle(x, y, d / 3, d / 3), null, Color.Yellow, 0, new Vector2(center, center), SpriteEffects.None, 0);*/
             sb.Draw(
-                Resources.Textures.Pirate,
+                AI is PlayerController ? Resources.Textures.Pirate : Resources.Textures.Defender,
                 new Rectangle(x, y, d * 7 / 4, d * 7 / 4),
                 null,
                 Color.White,
