@@ -27,7 +27,7 @@ namespace BoardingParty.Entities
             Friction = 1000;
             HasControl = true;
             Team = team;
-            AttackStrength = 7000;
+            AttackStrength = 6500;
             KnockoutResistance = 3300;
         }
 
@@ -118,7 +118,7 @@ namespace BoardingParty.Entities
             {
                 Position = position,
                 Velocity = velocity,
-                AttackStrength = 10000,
+                AttackStrength = 9000,
                 KnockoutResistance = 5000,
             };
         }

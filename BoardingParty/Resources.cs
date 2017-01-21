@@ -11,6 +11,7 @@ namespace BoardingParty
 
             public static Texture2D Pirate;
             public static Texture2D Defender;
+            public static Texture2D Barrel;
 
             public static Texture2D Deck;
             public static Texture2D Sail;

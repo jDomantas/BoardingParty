@@ -85,7 +85,7 @@ namespace BoardingParty
 
             while (TeamSize(2) < 3)
             {
-                double x = (Random.NextDouble() * 2 - 1) * Size.X * 0.7;
+                double x = (Random.NextDouble() + 1) * Size.X * 0.4 * (Random.Next(2) * 2 - 1);
                 double vy = 2000 + 500 * Random.NextDouble();
                 Entities.Add(Fighter.CreateEnemy(this, new Vector(x, -Size.Y * 1.2), new Vector(0, vy)));
             }

@@ -23,8 +23,7 @@ namespace BoardingParty.Entities
             Rectangle rect = new Rectangle(x, y, d, d);
             int center = Resources.Textures.Circle.Width / 2;
 
-            var color = Color.Red;
-            sb.Draw(Resources.Textures.Circle, rect, null, color, 0, new Vector2(center, center), SpriteEffects.None, 0);
+            sb.Draw(Resources.Textures.Barrel, new Rectangle(x, y, d * 2, d * 2), null, Color.White, 0, new Vector2(250, 250), SpriteEffects.None, 0);
         }
     }
 }

@@ -15,8 +15,8 @@ namespace BoardingParty
         public static int ScreenWidth = 1280;
         public static int ScreenHeight = 720;
 
-        public static int GameRenderWidth = 1280;
-        public static int GameRenderHeight = 900;
+        public static int GameRenderWidth = 2000;// 1280;
+        public static int GameRenderHeight = 1500;//900;
 
         RenderTarget2D renderTarget;
 
@@ -51,6 +51,7 @@ namespace BoardingParty
 
             Resources.Textures.Pirate = Content.Load<Texture2D>("pirato1");
             Resources.Textures.Defender = Content.Load<Texture2D>("pirato2");
+            Resources.Textures.Barrel = Content.Load<Texture2D>("barrel");
 
             Resources.Textures.Deck = Content.Load<Texture2D>("deck");
             Resources.Textures.Sail = Content.Load<Texture2D>("sales");
@@ -104,7 +105,7 @@ namespace BoardingParty
 
             Matrix w = Matrix.Identity;
             Vector2 camera = Vector2.Zero;
-            camera = new Vector2((float)world.Gravity.X, (float)world.Gravity.Y) / -25000;
+            camera = new Vector2((float)world.Gravity.X, (float)world.Gravity.Y) / -30000;
             Matrix view = Matrix.CreateLookAt(new Vector3(camera, 2.4f), Vector3.Zero, Vector3.UnitY);
             Matrix projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.PiOver4, 1, 0.1f, 10000f);
             
