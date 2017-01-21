@@ -11,45 +11,87 @@ namespace BoardingParty
 {
     class World
     {
-        public const double SwingTime = 7;
-        public const double EdgeBouncines = 0.2;
-        public const double Bounciness = 0.7;
+        public const double SwingTime = 8;
+        public const double EdgeBouncines = 0.5;
 
         public Vector Size { get; }
         public List<Entity> Entities { get; }
         public Vector Gravity { get; private set; }
 
         private double Time;
+        private Random Random { get; }
 
         public World(Vector size)
         {
+            Random = new Random();
             Size = size;
             Entities = new List<Entity>();
-
-            Entities.Add(new Fighter(this, new PlayerController()));
+            
             Entities.Add(new Barrel(this, 200) { Position = Size / 2 });
-            Entities.Add(new Barrel(this, 200) { Position = Size / 2 + new Vector(300, 0), Friction = 0.003 });
+            /*Entities.Add(new Barrel(this, 200) { Position = Size / 2 + new Vector(300, 0), Friction = 0.003 });
             Entities.Add(new Barrel(this, 200) { Position = Size / 2 + new Vector(0, 500), Friction = 0 });
             Entities.Add(new Barrel(this, 200) { Position = Size / 2 + new Vector(500, 0), Friction = 0 });
-            Entities.Add(new Barrel(this, 200) { Position = Size / 2 + new Vector(0, 300), Friction = 0.03 });
+            Entities.Add(new Barrel(this, 200) { Position = Size / 2 + new Vector(0, 300), Friction = 0.03 });*/
+        }
+
+        private int BarrelCount()
+        {
+            int cnt = 0;
+            for (int i = 0; i < Entities.Count; i++)
+                if (Entities[i] is Barrel)
+                    cnt++;
+            return cnt;
+        }
+
+        private int FighterCount(int team)
+        {
+            int cnt = 0;
+            for (int i = 0; i < Entities.Count; i++)
+                if (Entities[i] is Fighter && ((Fighter)Entities[i]).Team == team)
+                    cnt++;
+            return cnt;
         }
 
         public void Update(double dt)
         {
             Time += dt;
-            Gravity = new Vector(Math.Sin(Time / SwingTime * Math.PI * 2) * 90, Math.Sin(Time / (SwingTime * 1.4) * Math.PI * 2 + 123) * 15);
+            Gravity = new Vector(Math.Sin(Time / SwingTime * Math.PI * 2) * 30, Math.Sin(Time / (SwingTime * 1.4) * Math.PI * 2 + 123) * 5);
 
             for (int i = 0; i < Entities.Count; i++)
                 Entities[i].Update(dt);
 
             ResolveCollisions();
+
+            for (int i = Entities.Count - 1; i >= 0; i--)
+            {
+                if (Entities[i].Dead)
+                    Entities.RemoveAt(i);
+            }
+
+            while (BarrelCount() < 6)
+            {
+                double x = (Random.NextDouble() * 2 - 1) * Size.X * 0.7;
+                double vy = 2000 + 500 * Random.NextDouble();
+                Entities.Add(new Barrel(this, 200) { Position = new Vector(x, -Size.Y - 1000), Velocity = new Vector(0, vy) });
+            }
+
+            while (FighterCount(1) < 1)
+            {
+                double x = (Random.NextDouble() * 2 - 1) * Size.X * 0.7;
+                double vy = 2000 + 500 * Random.NextDouble();
+                Entities.Add(new Fighter(this, new ComputerController(), 1) { Position = new Vector(x, -Size.Y - 1000), Velocity = new Vector(0, vy) });
+            }
+
+            while (FighterCount(2) < 1)
+            {
+                double x = (Random.NextDouble() * 2 - 1) * Size.X * 0.7;
+                double vy = 2000 + 500 * Random.NextDouble();
+                Entities.Add(new Fighter(this, new PlayerController(), 2) { Position = new Vector(x, Size.Y + 1000), Velocity = new Vector(0, -vy) });
+            }
         }
 
         private void ResolveCollisions()
         {
-            for (int i = 0; i < Entities.Count; i++)
-                Entities[i].Force = Entities[i].PositionFix = Vector.Zero;
-
             for (int i = 0; i < Entities.Count; i++)
             {
                 ResolveCollisions(Entities[i]);
@@ -61,12 +103,6 @@ namespace BoardingParty
 
                     ResolveCollisions(Entities[i], Entities[j]);
                 }
-            }
-
-            for (int i = 0; i < Entities.Count; i++)
-            {
-                Entities[i].Position += Entities[i].PositionFix;
-                Entities[i].Velocity += Entities[i].Force;
             }
         }
 
@@ -81,23 +117,19 @@ namespace BoardingParty
                 double dist = diff.Length;
                 Vector fix = diff.Normalized * (a.Radius + b.Radius - dist) / 2;
 
-                b.PositionFix += fix;
-                a.PositionFix -= fix;
+                b.Position += fix;
+                a.Position -= fix;
+                
+                double totalMass = a.Mass + b.Mass;
+                Vector av = a.Velocity - 2 * b.Mass * (a.Velocity - b.Velocity).Dot(a.Position - b.Position) * (a.Position - b.Position) / (totalMass * (a.Position - b.Position).LengthSquared);
+                Vector bv = b.Velocity - 2 * a.Mass * (b.Velocity - a.Velocity).Dot(b.Position - a.Position) * (b.Position - a.Position) / (totalMass * (a.Position - b.Position).LengthSquared);
 
-                Vector v = (b.Velocity - a.Velocity);
-                double collisionSpeed = v.Length;
+                Vector da = av - a.Velocity;
+                Vector db = bv - b.Velocity;
 
-                double bounceSpeed = diff.Normalized.Dot(v);
-                Vector bounce = bounceSpeed * diff.Normalized;
+                a.Hit(da);
+                b.Hit(db);
 
-                Vector aDelta = bounce / (a.Mass + b.Mass) * b.Mass * Bounciness;
-                Vector bDelta = bounce / (a.Mass + b.Mass) * a.Mass * Bounciness;
-
-                a.Force += aDelta;
-                b.Force -= bDelta;
-
-                a.GotHit(bounce);
-                b.GotHit(bounce);
             }
         }
 
@@ -105,29 +137,58 @@ namespace BoardingParty
         {
             if (a.Position.X - a.Radius < -Size.X)
             {
-                a.PositionFix.X += (-Size.X - a.Position.X + a.Radius);
-                if (a.Velocity.X < 0)
-                    a.Velocity.X *= -EdgeBouncines;
+                if (ShouldKill(-a.Velocity.X, -Gravity.X))
+                    a.Dead = true;
+                else
+                {
+                    a.Position.X += (-Size.X - a.Position.X + a.Radius);
+                    if (a.Velocity.X < 0)
+                        a.Velocity.X *= -EdgeBouncines;
+                }
             }
             else if (a.Position.X + a.Radius > Size.X)
             {
-                a.PositionFix.X -= (a.Position.X + a.Radius - Size.X);
-                if (a.Velocity.X > 0)
-                    a.Velocity.X *= -EdgeBouncines;
+                if (ShouldKill(a.Velocity.X, Gravity.X))
+                    a.Dead = true;
+                else
+                {
+                    a.Position.X -= (a.Position.X + a.Radius - Size.X);
+                    if (a.Velocity.X > 0)
+                        a.Velocity.X *= -EdgeBouncines;
+                }
             }
 
             if (a.Position.Y - a.Radius < -Size.Y)
             {
-                a.PositionFix.Y += (-Size.Y - a.Position.Y + a.Radius);
                 if (a.Velocity.Y < 0)
-                    a.Velocity.Y *= -EdgeBouncines;
+                {
+                    a.Position.Y += (-Size.Y - a.Position.Y + a.Radius);
+                    if (a.Velocity.Y < 0)
+                        a.Velocity.Y *= -EdgeBouncines;
+                }
+                else
+                {
+                    a.Velocity.Y = Math.Max(2000, a.Velocity.Y);
+                }
             }
             else if (a.Position.Y + a.Radius > Size.Y)
             {
-                a.PositionFix.Y -= (a.Position.Y + a.Radius - Size.Y);
                 if (a.Velocity.Y > 0)
-                    a.Velocity.Y *= -EdgeBouncines;
+                {
+                    a.Position.Y -= (a.Position.Y + a.Radius - Size.Y);
+                    if (a.Velocity.Y > 0)
+                        a.Velocity.Y *= -EdgeBouncines;
+                }
+                else
+                {
+                    a.Velocity.Y = Math.Min(-2000, a.Velocity.Y);
+                }
             }
+        }
+
+        private bool ShouldKill(double velocity, double gravity)
+        {
+            return velocity + gravity * 100 > 8000;
         }
 
         public void Draw(SpriteBatch sb)
@@ -146,7 +207,7 @@ namespace BoardingParty
             for (int i = 0; i < Entities.Count; i++)
                 Entities[i].Draw(sb);
 
-            sb.Draw(Resources.Textures.Pixel, new Rectangle((int)(Gravity.X * 30) - 100, (int)(Gravity.Y * 30) - 100, 200, 200), Color.Blue);
+            //sb.Draw(Resources.Textures.Pixel, new Rectangle((int)(Gravity.X * 30) - 100, (int)(Gravity.Y * 30) - 100, 200, 200), Color.Blue);
 
             sb.End();
         }

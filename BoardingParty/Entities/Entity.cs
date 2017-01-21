@@ -12,40 +12,34 @@ namespace BoardingParty.Entities
     {
         public Vector Position;
         public Vector Velocity;
-        public Vector Force, PositionFix;
         public double Radius { get; }
         public World World { get; }
-        public double Control;
-        public double Friction = 0.015;
+        public double Friction = 1000;
         public double Mass = 1;
+        public bool Dead;
 
         public Entity(World world, double radius)
         {
             World = world;
             Radius = radius;
-            Control = 1;
         }
         
         public virtual void Update(double dt)
         {
-            Velocity += World.Gravity;
-            Position += Velocity * dt;
+            Velocity += World.Gravity * 2;
 
-            Velocity *= (1 - Friction);
+            Velocity *= 0.995;
+            double len = Velocity.Length;
+            if (len > Friction * dt)
+                Velocity = Velocity.Normalized * (len - Friction * dt);
+            else
+                Velocity = Vector.Zero;
             
-            double gain = 0.2 + (2000 - Velocity.Length) / 2000;
-            if (gain < 0.2)
-                gain = 0.2;
-
-            Control += dt * gain;
-            if (Control > 1)
-                Control = 1;
-        }
-
-        public void GotHit(Vector speed)
+            Position += Velocity * dt;        }
+        
+        public virtual void Hit(Vector deltav)
         {
-            if (speed.Length > 2000)
-                Control = 0;
+            Velocity += deltav;
         }
 
         public virtual void Draw(SpriteBatch sb)

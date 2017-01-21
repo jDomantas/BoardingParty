@@ -95,7 +95,7 @@ namespace BoardingParty
 
             Matrix w = Matrix.Identity;
             Vector2 camera = Vector2.Zero;
-            //camera = new Vector2((float)world.Gravity.X, (float)world.Gravity.Y) / -100000;
+            camera = new Vector2((float)world.Gravity.X, (float)world.Gravity.Y) / -20000;
             Matrix view = Matrix.CreateLookAt(new Vector3(camera, 2.4f), Vector3.Zero, Vector3.UnitY);
             Matrix projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.PiOver4, 1, 0.1f, 10000f);
             

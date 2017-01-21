@@ -11,8 +11,8 @@ namespace BoardingParty.Entities
     {
         public Barrel(World world, double radius) : base(world, radius)
         {
-            Friction = 0.007;
-            Mass = 100;
+            Mass = 1;
+            Friction = 200;
         }
 
         public override void Draw(SpriteBatch sb)
@@ -23,7 +23,8 @@ namespace BoardingParty.Entities
             Rectangle rect = new Rectangle(x, y, d, d);
             int center = Resources.Textures.Circle.Width / 2;
 
-            sb.Draw(Resources.Textures.Circle, rect, null, Color.Red, 0, new Vector2(center, center), SpriteEffects.None, 0);
+            var color = Color.Red;
+            sb.Draw(Resources.Textures.Circle, rect, null, color, 0, new Vector2(center, center), SpriteEffects.None, 0);
         }
     }
 }

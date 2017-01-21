@@ -9,6 +9,6 @@ namespace BoardingParty.AI
     interface FighterAI
     {
         Vector? Move(Fighter fighter);
-        Vector? Strike(Fighter fighter);
+        Entity Strike(Fighter fighter);
     }
 }

@@ -38,6 +38,7 @@
     <ApplicationIcon>Icon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="AI\ComputerController.cs" />
     <Compile Include="AI\FighterAI.cs" />
     <Compile Include="AI\PlayerController.cs" />
     <Compile Include="BoardingGame.cs" />
