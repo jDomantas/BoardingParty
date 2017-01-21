@@ -10,8 +10,8 @@ namespace BoardingParty.Entities
 {
     class Fighter : Entity
     {
-        public const double Acceleration = 12000;
-        public const double AttackRange = 900;
+        public const double Acceleration = 25000;
+        public const double AttackRange = 1200;
         public const double AttackStrength = 9000;
 
         public bool HasControl;
@@ -32,7 +32,7 @@ namespace BoardingParty.Entities
             if (HasControl)
             {
                 Vector movement = AI.Move(this).GetValueOrDefault();
-                Vector targetVelocity = movement * 3800;
+                Vector targetVelocity = movement * 4000;
 
                 Vector diff = targetVelocity - Velocity;
                 double acc = Acceleration;
@@ -84,7 +84,7 @@ namespace BoardingParty.Entities
         public override void Hit(Vector deltav)
         {
             base.Hit(deltav);
-            if (deltav.LengthSquared > 3000 * 3000)
+            if (deltav.LengthSquared > 3300 * 3300)
                 HasControl = false;
         }
     }

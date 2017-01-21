@@ -11,7 +11,7 @@ namespace BoardingParty
 {
     class World
     {
-        public const double SwingTime = 8;
+        public const double SwingTime = 8 * 1.2;
         public const double EdgeBouncines = 0.5;
 
         public Vector Size { get; }
@@ -20,6 +20,8 @@ namespace BoardingParty
 
         private double Time;
         private Random Random { get; }
+
+        public Dictionary<int, int> TeamScores = new Dictionary<int, int>();
 
         public World(Vector size)
         {
@@ -89,6 +91,8 @@ namespace BoardingParty
                 double x = (Random.NextDouble() * 2 - 1) * Size.X * 0.7;
                 double vy = 2000 + 500 * Random.NextDouble();
                 Entities.Add(new Fighter(this, new ComputerController(), 1) { Position = new Vector(x, -Size.Y - 1000), Velocity = new Vector(0, vy) });
+                if (TeamScores.ContainsKey(1)) TeamScores[1] += 1;
+                else TeamScores[1] = 1;
             }
 
             while (PlayerCount(2) < 1)
@@ -96,6 +100,8 @@ namespace BoardingParty
                 double x = (Random.NextDouble() * 2 - 1) * Size.X * 0.7;
                 double vy = 2000 + 500 * Random.NextDouble();
                 Entities.Add(new Fighter(this, new PlayerController(), 2) { Position = new Vector(x, Size.Y + 1000), Velocity = new Vector(0, -vy) });
+                if (TeamScores.ContainsKey(2)) TeamScores[2] += 1;
+                else TeamScores[2] = 1;
             }
 
             while (FighterCount(2) < 3)
@@ -103,6 +109,8 @@ namespace BoardingParty
                 double x = (Random.NextDouble() * 2 - 1) * Size.X * 0.7;
                 double vy = 2000 + 500 * Random.NextDouble();
                 Entities.Add(new Fighter(this, new ComputerController(), 2) { Position = new Vector(x, Size.Y + 1000), Velocity = new Vector(0, -vy) });
+                if (TeamScores.ContainsKey(2)) TeamScores[2] += 1;
+                else TeamScores[2] = 1;
             }
         }
 
