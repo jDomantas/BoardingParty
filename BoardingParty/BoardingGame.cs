@@ -34,7 +34,7 @@ namespace BoardingParty
         {
             base.Initialize();
 
-            world = new World(new Vector(3300, 3000));
+            world = new World(new Vector(3300 * 1.8f, 3000 * 1.8f));
             
             base.Initialize();
         }

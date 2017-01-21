@@ -52,6 +52,15 @@ namespace BoardingParty
             return cnt;
         }
 
+        private int PlayerCount(int team)
+        {
+            int cnt = 0;
+            for (int i = 0; i < Entities.Count; i++)
+                if (Entities[i] is Fighter && ((Fighter)Entities[i]).Team == team && ((Fighter)Entities[i]).AI is PlayerController)
+                    cnt++;
+            return cnt;
+        }
+
         public void Update(double dt)
         {
             Time += dt;
@@ -75,18 +84,25 @@ namespace BoardingParty
                 Entities.Add(new Barrel(this, 200) { Position = new Vector(x, -Size.Y - 1000), Velocity = new Vector(0, vy) });
             }
 
-            while (FighterCount(1) < 1)
+            while (FighterCount(1) < 3)
             {
                 double x = (Random.NextDouble() * 2 - 1) * Size.X * 0.7;
                 double vy = 2000 + 500 * Random.NextDouble();
                 Entities.Add(new Fighter(this, new ComputerController(), 1) { Position = new Vector(x, -Size.Y - 1000), Velocity = new Vector(0, vy) });
             }
 
-            while (FighterCount(2) < 1)
+            while (PlayerCount(2) < 1)
             {
                 double x = (Random.NextDouble() * 2 - 1) * Size.X * 0.7;
                 double vy = 2000 + 500 * Random.NextDouble();
                 Entities.Add(new Fighter(this, new PlayerController(), 2) { Position = new Vector(x, Size.Y + 1000), Velocity = new Vector(0, -vy) });
+            }
+
+            while (FighterCount(2) < 3)
+            {
+                double x = (Random.NextDouble() * 2 - 1) * Size.X * 0.7;
+                double vy = 2000 + 500 * Random.NextDouble();
+                Entities.Add(new Fighter(this, new ComputerController(), 2) { Position = new Vector(x, Size.Y + 1000), Velocity = new Vector(0, -vy) });
             }
         }
 

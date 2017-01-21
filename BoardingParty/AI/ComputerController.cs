@@ -15,7 +15,7 @@ namespace BoardingParty.AI
             for (int i = 0; i < fighter.World.Entities.Count; i++)
             {
                 var target = fighter.World.Entities[i];
-                if (target is Fighter && target != fighter)
+                if (target is Fighter && target != fighter && (target as Fighter).Team != fighter.Team)
                     targeting += (target.Position - fighter.Position) / (target.Position - fighter.Position).LengthSquared;
             }
 
@@ -35,7 +35,14 @@ namespace BoardingParty.AI
             Entity closest = null;
             for (int i = 0; i < fighter.World.Entities.Count; i++)
             {
-                if (fighter.World.Entities[i] == fighter || !(fighter.World.Entities[i] is Fighter))
+                if (fighter.World.Entities[i] == fighter)
+                    continue;
+
+                Fighter f = fighter.World.Entities[i] as Fighter;
+                if (f == null)
+                    continue;
+
+                if (f.Team == fighter.Team)
                     continue;
 
                 if (closest == null)

@@ -11,8 +11,8 @@ namespace BoardingParty.Entities
     class Fighter : Entity
     {
         public const double Acceleration = 12000;
-        public const double AttackRange = 700;
-        public const double AttackStrength = 7000;
+        public const double AttackRange = 900;
+        public const double AttackStrength = 9000;
 
         public bool HasControl;
         public FighterAI AI;
@@ -32,7 +32,7 @@ namespace BoardingParty.Entities
             if (HasControl)
             {
                 Vector movement = AI.Move(this).GetValueOrDefault();
-                Vector targetVelocity = movement * 3500;
+                Vector targetVelocity = movement * 3800;
 
                 Vector diff = targetVelocity - Velocity;
                 double acc = Acceleration;
@@ -75,7 +75,10 @@ namespace BoardingParty.Entities
             int center = Resources.Textures.Circle.Width / 2;
 
             var color = HasControl ? Color.Black : new Color(64, 64, 64);
+            if (Team == 2) color = HasControl ? Color.Blue : new Color(64, 64, 255);
             sb.Draw(Resources.Textures.Circle, rect, null, color, 0, new Vector2(center, center), SpriteEffects.None, 0);
+            if (AI is PlayerController)
+                sb.Draw(Resources.Textures.Circle, new Rectangle(x, y, d / 3, d / 3), null, Color.Yellow, 0, new Vector2(center, center), SpriteEffects.None, 0);
         }
 
         public override void Hit(Vector deltav)
