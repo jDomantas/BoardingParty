@@ -11,7 +11,7 @@ namespace BoardingParty
 {
     class World
     {
-        public const double SwingTime = 8 * 1.2;
+        public const double SwingTime = 8 * 1.5;
         public const double EdgeBouncines = 0.5;
 
         public Vector Size { get; }
@@ -19,9 +19,7 @@ namespace BoardingParty
         public Vector Gravity { get; private set; }
 
         private double Time;
-        private Random Random { get; }
-
-        public Dictionary<int, int> TeamScores = new Dictionary<int, int>();
+        public Random Random { get; }
 
         public World(Vector size)
         {
@@ -45,7 +43,7 @@ namespace BoardingParty
             return cnt;
         }
 
-        private int FighterCount(int team)
+        private int TeamSize(int team)
         {
             int cnt = 0;
             for (int i = 0; i < Entities.Count; i++)
@@ -53,16 +51,7 @@ namespace BoardingParty
                     cnt++;
             return cnt;
         }
-
-        private int PlayerCount(int team)
-        {
-            int cnt = 0;
-            for (int i = 0; i < Entities.Count; i++)
-                if (Entities[i] is Fighter && ((Fighter)Entities[i]).Team == team && ((Fighter)Entities[i]).AI is PlayerController)
-                    cnt++;
-            return cnt;
-        }
-
+        
         public void Update(double dt)
         {
             Time += dt;
@@ -86,31 +75,18 @@ namespace BoardingParty
                 Entities.Add(new Barrel(this, 200) { Position = new Vector(x, -Size.Y - 1000), Velocity = new Vector(0, vy) });
             }
 
-            while (FighterCount(1) < 3)
+            while (TeamSize(1) < 1)
             {
                 double x = (Random.NextDouble() * 2 - 1) * Size.X * 0.7;
                 double vy = 2000 + 500 * Random.NextDouble();
-                Entities.Add(new Fighter(this, new ComputerController(), 1) { Position = new Vector(x, -Size.Y - 1000), Velocity = new Vector(0, vy) });
-                if (TeamScores.ContainsKey(1)) TeamScores[1] += 1;
-                else TeamScores[1] = 1;
+                Entities.Add(Fighter.CreatePlayer(this, new Vector(x, Size.Y * 1.2), new Vector(0, -vy)));
             }
 
-            while (PlayerCount(2) < 1)
+            while (TeamSize(2) < 4)
             {
                 double x = (Random.NextDouble() * 2 - 1) * Size.X * 0.7;
                 double vy = 2000 + 500 * Random.NextDouble();
-                Entities.Add(new Fighter(this, new PlayerController(), 2) { Position = new Vector(x, Size.Y + 1000), Velocity = new Vector(0, -vy) });
-                if (TeamScores.ContainsKey(2)) TeamScores[2] += 1;
-                else TeamScores[2] = 1;
-            }
-
-            while (FighterCount(2) < 3)
-            {
-                double x = (Random.NextDouble() * 2 - 1) * Size.X * 0.7;
-                double vy = 2000 + 500 * Random.NextDouble();
-                Entities.Add(new Fighter(this, new ComputerController(), 2) { Position = new Vector(x, Size.Y + 1000), Velocity = new Vector(0, -vy) });
-                if (TeamScores.ContainsKey(2)) TeamScores[2] += 1;
-                else TeamScores[2] = 1;
+                Entities.Add(Fighter.CreateEnemy(this, new Vector(x, -Size.Y * 1.2), new Vector(0, vy)));
             }
         }
 
@@ -212,7 +188,7 @@ namespace BoardingParty
 
         private bool ShouldKill(double velocity, double gravity)
         {
-            return velocity + gravity * 100 > 8000;
+            return velocity + gravity * 100 > 9000;
         }
 
         public void Draw(SpriteBatch sb)

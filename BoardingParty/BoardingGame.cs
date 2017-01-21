@@ -111,32 +111,7 @@ namespace BoardingParty
             spriteBatch.Begin(transformMatrix: transform);
             spriteBatch.Draw(renderTarget, new Rectangle(-renderTarget.Width / 2, -renderTarget.Height / 2, renderTarget.Width, renderTarget.Height), Color.White);
             spriteBatch.End();
-
-            spriteBatch.Begin();
-
-            int team1 = world.TeamScores.ContainsKey(1) ? world.TeamScores[1] : 0;
-            int team2 = world.TeamScores.ContainsKey(2) ? world.TeamScores[2] : 0;
-
-            int x = 0;
-            for (int i = 0; i < team1 / 10; i++)
-            {
-                spriteBatch.Draw(Resources.Textures.Pixel, new Rectangle(i * 14 + 2, 2, 10, 10), Color.Gold);
-                x += 14;
-            }
-            for (int i = 0; i < team1 % 10; i++)
-                spriteBatch.Draw(Resources.Textures.Pixel, new Rectangle(x + i * 14 + 5, 5, 4, 4), Color.Gold);
-
-            x = 0;
-            for (int i = 0; i < team2 / 10; i++)
-            {
-                spriteBatch.Draw(Resources.Textures.Pixel, new Rectangle(i * 14 + 2, 16, 10, 10), Color.Gold);
-                x += 14;
-            }
-            for (int i = 0; i < team2 % 10; i++)
-                spriteBatch.Draw(Resources.Textures.Pixel, new Rectangle(x + i * 14 + 5, 19, 4, 4), Color.Gold);
-
-            spriteBatch.End();
-
+            
             base.Draw(gameTime);
         }
     }

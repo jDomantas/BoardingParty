@@ -38,6 +38,9 @@
     <ApplicationIcon>Icon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="AI\Avoider.cs" />
+    <Compile Include="AI\BarrelLauncher.cs" />
+    <Compile Include="AI\Chaser.cs" />
     <Compile Include="AI\ComputerController.cs" />
     <Compile Include="AI\FighterAI.cs" />
     <Compile Include="AI\PlayerController.cs" />

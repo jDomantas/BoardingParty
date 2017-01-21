@@ -6,28 +6,32 @@ using BoardingParty.Entities;
 
 namespace BoardingParty.AI
 {
-    class ComputerController : FighterAI
+    abstract class ComputerController : FighterAI
     {
-        public Vector? Move(Fighter fighter)
+        private double AttackTimer;
+        private Entity Target;
+
+
+        public abstract Vector? Move(Fighter target);
+
+        private Entity Mark(Entity target)
         {
-            Vector targeting = Vector.Zero;
+            if (Target != target)
+                AttackTimer = 0.33;
 
-            for (int i = 0; i < fighter.World.Entities.Count; i++)
-            {
-                var target = fighter.World.Entities[i];
-                if (target is Fighter && target != fighter && (target as Fighter).Team != fighter.Team)
-                    targeting += (target.Position - fighter.Position) / (target.Position - fighter.Position).LengthSquared;
-            }
+            Target = target;
+            
+            if (AttackTimer <= 0)
+                return Target;
+            else
+                return null;
+        }
 
-            if (targeting.LengthSquared > 0)
-                targeting = targeting.Normalized;
-
-            Vector gravityAvoidance = new Vector(-fighter.World.Gravity.X, 0);
-
-            if (gravityAvoidance.LengthSquared > 0)
-                gravityAvoidance = gravityAvoidance.Normalized;
-
-            return (targeting + gravityAvoidance).Normalized;
+        public void Update(double dt)
+        {
+            AttackTimer -= dt;
+            if (AttackTimer <= 0)
+                AttackTimer = 0;
         }
 
         public Entity Strike(Fighter fighter)
@@ -58,12 +62,12 @@ namespace BoardingParty.AI
 
             if (closest != null)
             {
-                double dist = (closest.Position - fighter.Position).Length;
-                if (dist > Fighter.AttackRange - 150)
-                    return null;
+                double dist = (closest.Position - fighter.Position).LengthSquared;
+                if (dist > Fighter.AttackRange * Fighter.AttackRange)
+                    return Mark(null);
             }
 
-            return closest;
+            return Mark(closest);
         }
     }
 }

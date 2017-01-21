@@ -10,5 +10,6 @@ namespace BoardingParty.AI
     {
         Vector? Move(Fighter fighter);
         Entity Strike(Fighter fighter);
+        void Update(double dt);
     }
 }

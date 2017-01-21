@@ -11,7 +11,7 @@ namespace BoardingParty.Entities
     {
         public Barrel(World world, double radius) : base(world, radius)
         {
-            Mass = 1;
+            Mass = 3.5;
             Friction = 200;
         }
 

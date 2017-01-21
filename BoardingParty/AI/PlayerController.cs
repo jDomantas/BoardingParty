@@ -10,7 +10,7 @@ namespace BoardingParty.AI
     class PlayerController : FighterAI
     {
         KeyboardState OldKeys, CurrentKeys;
-
+        private double AttackDelay;
         public Vector? Move(Fighter fighter)
         {
             OldKeys = CurrentKeys;
@@ -29,8 +29,18 @@ namespace BoardingParty.AI
             return movement.LengthSquared > 0 ? movement.Normalized : default(Vector?);
         }
 
+        public void Update(double dt)
+        {
+            AttackDelay -= dt;
+            if (AttackDelay <= 0)
+                AttackDelay = 0;
+        }
+
         public Entity Strike(Fighter fighter)
         {
+            if (AttackDelay > 0)
+                return null;
+
             if (!OldKeys.IsKeyDown(Keys.Space) && CurrentKeys.IsKeyDown(Keys.Space))
             {
                 Entity closest = null;
@@ -50,6 +60,9 @@ namespace BoardingParty.AI
                     }
                     
                 }
+
+                if (closest != null)
+                    AttackDelay = 0.5;
 
                 return closest;
             }

@@ -12,8 +12,10 @@ namespace BoardingParty.Entities
     {
         public const double Acceleration = 25000;
         public const double AttackRange = 1200;
-        public const double AttackStrength = 9000;
+        public const double TypicalAttackStrength = 7000;
 
+        public double AttackStrength;
+        public double KnockoutResistance;
         public bool HasControl;
         public FighterAI AI;
 
@@ -25,19 +27,21 @@ namespace BoardingParty.Entities
             Friction = 1000;
             HasControl = true;
             Team = team;
+            AttackStrength = 7000;
+            KnockoutResistance = 3300;
         }
 
         public override void Update(double dt)
         {
+            AI.Update(dt);
+
             if (HasControl)
             {
                 Vector movement = AI.Move(this).GetValueOrDefault();
                 Vector targetVelocity = movement * 4000;
 
                 Vector diff = targetVelocity - Velocity;
-                double acc = Acceleration;
-                //acc -= Math.Sqrt(Velocity.Length) * 30;
-                acc *= dt;
+                double acc = Acceleration * dt;
                 if (diff.LengthSquared > acc * acc)
                     diff = diff.Normalized * acc;
 
@@ -46,7 +50,7 @@ namespace BoardingParty.Entities
 
             Friction = HasControl ? 2000 : 1000;
 
-            if (Velocity.LengthSquared < 2500 * 2500)
+            if (Velocity.LengthSquared < KnockoutResistance * KnockoutResistance * 0.6)
                 HasControl = true;
 
             if (HasControl)
@@ -55,10 +59,11 @@ namespace BoardingParty.Entities
                 if (target != null && (target.Position - Position).LengthSquared < AttackRange * AttackRange)
                 {
                     Vector d = (target.Position - Position).Normalized;
-                    if (target.Velocity.LengthSquared < AttackStrength * AttackStrength / 2)
+                    double str = AttackStrength;
+                    if (target.Velocity.LengthSquared < str * str / 2)
                     {
                         target.Velocity = Vector.Zero;
-                        target.Hit(AttackStrength * d);
+                        target.Hit(str * d);
                     }
                 }
             }
@@ -84,8 +89,34 @@ namespace BoardingParty.Entities
         public override void Hit(Vector deltav)
         {
             base.Hit(deltav);
-            if (deltav.LengthSquared > 3300 * 3300)
+            if (deltav.LengthSquared > KnockoutResistance * KnockoutResistance)
                 HasControl = false;
+        }
+
+        public static Fighter CreatePlayer(World world, Vector position, Vector velocity)
+        {
+            return new Fighter(world, new PlayerController(), 1)
+            {
+                Position = position,
+                Velocity = velocity,
+                AttackStrength = 10000,
+                KnockoutResistance = 5000,
+            };
+        }
+
+        public static Fighter CreateEnemy(World world, Vector position, Vector velocity)
+        {
+            int aiType = world.Random.Next(6);
+            FighterAI ai;
+            if (aiType < 4) ai = new Avoider();
+            else if (aiType < 5) ai = new Chaser();
+            else ai = new BarrelLauncher();
+
+            return new Fighter(world, ai, 2)
+            {
+                Position = position,
+                Velocity = velocity,
+            };
         }
     }
 }
