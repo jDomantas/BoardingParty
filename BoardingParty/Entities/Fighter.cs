@@ -88,11 +88,14 @@ namespace BoardingParty.Entities
 
             var texture = AI is PlayerController ?
                 (HasControl ? Resources.Textures.Pirate : Dead ? Resources.Textures.PirateDead : Resources.Textures.PirateOw) :
-                (HasControl ? Resources.Textures.Defender : Dead ? Resources.Textures.DefenderOw : Resources.Textures.DefenderOw);
+                (HasControl ? Resources.Textures.Defender : Dead ? Resources.Textures.DefenderDead : Resources.Textures.DefenderOw);
 
-            if (AI is PlayerController && HasControl && !Dead)
+            if (HasControl && !Dead)
             {
-                texture = Resources.Textures.PirateWalk[walkFrame];
+                texture = AI is PlayerController ?
+                    Resources.Textures.PirateWalk[walkFrame] :
+                    Resources.Textures.DefenderWalk[walkFrame];
+
                 d *= 2;
                 rect.Width *= 2;
                 rect.Height *= 2;

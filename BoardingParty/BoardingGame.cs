@@ -53,8 +53,14 @@ namespace BoardingParty
             Resources.Textures.PirateWalk = new Texture2D[8];
             for (int i = 0; i < Resources.Textures.PirateWalk.Length; i++)
                 Resources.Textures.PirateWalk[i] = Content.Load<Texture2D>("pirato/walk" + (i + 1));
+
             Resources.Textures.Defender = Content.Load<Texture2D>("pirato2");
             Resources.Textures.DefenderOw = Content.Load<Texture2D>("ow2");
+            Resources.Textures.DefenderDead = Content.Load<Texture2D>("dead2");
+            Resources.Textures.DefenderWalk = new Texture2D[8];
+            for (int i = 0; i < Resources.Textures.DefenderWalk.Length; i++)
+                Resources.Textures.DefenderWalk[i] = Content.Load<Texture2D>("pirato2/walk" + (i + 1));
+
             Resources.Textures.Barrel = Content.Load<Texture2D>("barrel");
 
             Resources.Textures.Deck = Content.Load<Texture2D>("deck");
