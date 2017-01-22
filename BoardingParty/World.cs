@@ -65,11 +65,11 @@ namespace BoardingParty
 
             for (int i = Entities.Count - 1; i >= 0; i--)
             {
-                if (Entities[i].Dead)
+                if (Entities[i].Dead && Entities[i].RemovalWait <= 0)
                     Entities.RemoveAt(i);
             }
 
-            while (BarrelCount() < 4)
+            while (BarrelCount() < 4 && Random.Next(30) == 0)
             {
                 double x = (Random.NextDouble() * 2 - 1) * Size.X * 0.7;
                 double vy = 2000 + 500 * Random.NextDouble();
@@ -83,7 +83,7 @@ namespace BoardingParty
                 Entities.Add(Fighter.CreatePlayer(this, new Vector(x, Size.Y * 1.2), new Vector(0, -vy)));
             }
 
-            while (TeamSize(2) < 3)
+            while (TeamSize(2) < 3 && Random.Next(30) == 0)
             {
                 double x = (Random.NextDouble() + 1) * Size.X * 0.4 * (Random.Next(2) * 2 - 1);
                 double vy = 2000 + 500 * Random.NextDouble();
@@ -143,13 +143,16 @@ namespace BoardingParty
 
         private void ResolveCollisions(Entity a)
         {
-            if (a is Obstacle)
+            if (a is Obstacle || a.Dead)
                 return;
 
             if (a.Position.X - a.Radius < -Size.X)
             {
                 if (ShouldKill(-a.Velocity.X, -Gravity.X))
+                {
+                    a.Velocity *= 0.3;
                     a.Dead = true;
+                }
                 else
                 {
                     a.Position.X += (-Size.X - a.Position.X + a.Radius);
@@ -160,7 +163,10 @@ namespace BoardingParty
             else if (a.Position.X + a.Radius > Size.X)
             {
                 if (ShouldKill(a.Velocity.X, Gravity.X))
+                {
+                    a.Velocity *= 0.3;
                     a.Dead = true;
+                }
                 else
                 {
                     a.Position.X -= (a.Position.X + a.Radius - Size.X);

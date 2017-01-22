@@ -30,6 +30,9 @@ namespace BoardingParty.AI
                 }
             }
 
+            if (nearest == null)
+                return null;
+
             Vector navigation = (nearest.Position - fighter.Position).Normalized;
 
             Vector avoidance = Vector.Zero;
@@ -40,6 +43,12 @@ namespace BoardingParty.AI
 
                 if ((e.Position - fighter.Position).Length < Fighter.AttackRange * 0.7)
                     avoidance += (fighter.Position - e.Position).Normalized;
+            }
+
+            if (navigation.LengthSquared > 0.0001 && avoidance.LengthSquared > 0.0001 &&
+                navigation.Cross(avoidance) / navigation.Length / avoidance.Length < 0.2)
+            {
+                navigation = navigation.Left;
             }
 
             Vector total = navigation + avoidance;

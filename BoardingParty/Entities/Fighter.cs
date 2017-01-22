@@ -18,6 +18,7 @@ namespace BoardingParty.Entities
         public double KnockoutResistance;
         public bool HasControl;
         public FighterAI AI;
+        public double DistanceWalked;
 
         public int Team;
 
@@ -33,37 +34,41 @@ namespace BoardingParty.Entities
 
         public override void Update(double dt)
         {
-            AI.Update(dt);
-
-            if (HasControl)
+            if (!Dead)
             {
-                Vector movement = AI.Move(this).GetValueOrDefault();
-                Vector targetVelocity = movement * 4000;
+                AI.Update(dt);
 
-                Vector diff = targetVelocity - Velocity;
-                double acc = Acceleration * dt;
-                if (diff.LengthSquared > acc * acc)
-                    diff = diff.Normalized * acc;
-
-                Velocity += diff;
-            }
-
-            Friction = HasControl ? 2000 : 1000;
-
-            if (Velocity.LengthSquared < KnockoutResistance * KnockoutResistance * 0.6)
-                HasControl = true;
-
-            if (HasControl)
-            {
-                Entity target = AI.Strike(this);
-                if (target != null && (target.Position - Position).LengthSquared < AttackRange * AttackRange)
+                if (HasControl)
                 {
-                    Vector d = (target.Position - Position).Normalized;
-                    double str = AttackStrength;
-                    if (target.Velocity.LengthSquared < str * str / 2)
+                    Vector movement = AI.Move(this).GetValueOrDefault();
+                    Vector targetVelocity = movement * 4000;
+
+                    Vector diff = targetVelocity - Velocity;
+                    double acc = Acceleration * dt;
+                    if (diff.LengthSquared > acc * acc)
+                        diff = diff.Normalized * acc;
+
+                    Velocity += diff;
+                    DistanceWalked += Velocity.Length;
+                }
+
+                Friction = HasControl ? 2000 : 1000;
+
+                if (Velocity.LengthSquared < KnockoutResistance * KnockoutResistance * 0.6)
+                    HasControl = true;
+
+                if (HasControl)
+                {
+                    Entity target = AI.Strike(this);
+                    if (target != null && (target.Position - Position).LengthSquared < AttackRange * AttackRange)
                     {
-                        target.Velocity = Vector.Zero;
-                        target.Hit(str * d);
+                        Vector d = (target.Position - Position).Normalized;
+                        double str = AttackStrength;
+                        if (target.Velocity.LengthSquared < str * str / 2)
+                        {
+                            target.Velocity = Vector.Zero;
+                            target.Hit(str * d);
+                        }
                     }
                 }
             }
@@ -78,19 +83,30 @@ namespace BoardingParty.Entities
             int d = (int)Math.Round(Radius * 2);
             Rectangle rect = new Rectangle(x, y, d, d);
             int center = Resources.Textures.Circle.Width / 2;
+            
+            int walkFrame = (int)Math.Floor(DistanceWalked / 10000) % 8;
 
-            /*var color = HasControl ? Color.Black : new Color(64, 64, 64);
-            if (Team == 2) color = HasControl ? Color.Blue : new Color(64, 64, 255);
-            sb.Draw(Resources.Textures.Circle, rect, null, color, 0, new Vector2(center, center), SpriteEffects.None, 0);
-            if (AI is PlayerController)
-                sb.Draw(Resources.Textures.Circle, new Rectangle(x, y, d / 3, d / 3), null, Color.Yellow, 0, new Vector2(center, center), SpriteEffects.None, 0);*/
+            var texture = AI is PlayerController ?
+                (HasControl ? Resources.Textures.Pirate : Dead ? Resources.Textures.PirateDead : Resources.Textures.PirateOw) :
+                (HasControl ? Resources.Textures.Defender : Dead ? Resources.Textures.DefenderOw : Resources.Textures.DefenderOw);
+
+            if (AI is PlayerController && HasControl && !Dead)
+            {
+                texture = Resources.Textures.PirateWalk[walkFrame];
+                d *= 2;
+                rect.Width *= 2;
+                rect.Height *= 2;
+            }
+
+            Color color = Color.White * (float)RemovalWait;
+
             sb.Draw(
-                AI is PlayerController ? Resources.Textures.Pirate : Resources.Textures.Defender,
+                texture,
                 new Rectangle(x, y, d * 7 / 4, d * 7 / 4),
                 null,
-                Color.White,
-                (float)Rotation - MathHelper.PiOver2,
-                new Vector2(Resources.Textures.Pirate.Width / 2, Resources.Textures.Pirate.Height / 2),
+                color,
+                (float)Rotation - MathHelper.PiOver2 + (HasControl ? 0 : MathHelper.Pi),
+                new Vector2(texture.Width / 2, texture.Height / 2),
                 SpriteEffects.None,
                 0);
 

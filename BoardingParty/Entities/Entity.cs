@@ -18,27 +18,35 @@ namespace BoardingParty.Entities
         public double Mass = 1;
         public bool Dead;
         public double Rotation = 0;
+        public double RemovalWait;
 
         public Entity(World world, double radius)
         {
             World = world;
             Radius = radius;
+            RemovalWait = 1;
         }
         
         public virtual void Update(double dt)
         {
+            if (Dead)
+                RemovalWait -= dt;
+
             if (Velocity.X != 0 || Velocity.Y != 0)
                 Rotation = Math.Atan2(Velocity.Y, Velocity.X);
 
-            Velocity += World.Gravity * 2;
+            if (!Dead)
+            {
+                Velocity += World.Gravity * 2;
 
-            Velocity *= 0.995;
-            double len = Velocity.Length;
-            if (len > Friction * dt)
-                Velocity = Velocity.Normalized * (len - Friction * dt);
-            else
-                Velocity = Vector.Zero;
-            
+                Velocity *= 0.995;
+                double len = Velocity.Length;
+                if (len > Friction * dt)
+                    Velocity = Velocity.Normalized * (len - Friction * dt);
+                else
+                    Velocity = Vector.Zero;
+            }
+
             Position += Velocity * dt;        }
         
         public virtual void Hit(Vector deltav)

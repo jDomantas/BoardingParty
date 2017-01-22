@@ -19,9 +19,7 @@ namespace BoardingParty
         public static int GameRenderHeight = 1500;//900;
 
         RenderTarget2D renderTarget;
-
-        float time;
-
+        
         public BoardingGame()
         {
             graphics = new GraphicsDeviceManager(this);
@@ -37,7 +35,7 @@ namespace BoardingParty
         {
             base.Initialize();
 
-            world = new World(new Vector(4550, 3500));
+            world = new World(new Vector(4550, 3500) * 0.92f);
             
             base.Initialize();
         }
@@ -50,7 +48,13 @@ namespace BoardingParty
             Resources.Textures.Pixel.SetData(new Color[] { Color.White });
 
             Resources.Textures.Pirate = Content.Load<Texture2D>("pirato1");
+            Resources.Textures.PirateOw = Content.Load<Texture2D>("ow1");
+            Resources.Textures.PirateDead = Content.Load<Texture2D>("dead1");
+            Resources.Textures.PirateWalk = new Texture2D[8];
+            for (int i = 0; i < Resources.Textures.PirateWalk.Length; i++)
+                Resources.Textures.PirateWalk[i] = Content.Load<Texture2D>("pirato/walk" + (i + 1));
             Resources.Textures.Defender = Content.Load<Texture2D>("pirato2");
+            Resources.Textures.DefenderOw = Content.Load<Texture2D>("ow2");
             Resources.Textures.Barrel = Content.Load<Texture2D>("barrel");
 
             Resources.Textures.Deck = Content.Load<Texture2D>("deck");
@@ -86,10 +90,10 @@ namespace BoardingParty
             if (Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
-            world.Update(gameTime.ElapsedGameTime.TotalSeconds);
+            double dt = gameTime.ElapsedGameTime.TotalSeconds * 1;
 
-            time += 1 / 60f;
-
+            world.Update(dt);
+            
             base.Update(gameTime);
         }
         
@@ -114,10 +118,7 @@ namespace BoardingParty
             GraphicsDevice.RasterizerState = new RasterizerState() { CullMode = CullMode.None };
 
             GraphicsDevice.Clear(Color.CornflowerBlue);
-
-            float dx = (float)Math.Cos(time) * 10;
-            float dy = (float)Math.Sin(time) * 10;
-
+            
             spriteBatch.Begin(transformMatrix: transform);
             spriteBatch.Draw(renderTarget, new Rectangle(-renderTarget.Width / 2, -renderTarget.Height / 2, renderTarget.Width, renderTarget.Height), Color.White);
             spriteBatch.End();
