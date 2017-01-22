@@ -17,9 +17,18 @@ namespace BoardingParty.Entities
 
         public override void Draw(SpriteBatch sb)
         {
+            double scale = 1;
+            if (Dead)
+            {
+                if (RemovalWait > 0.7)
+                    scale = 1.4 - (RemovalWait - 0.7) * (RemovalWait - 0.7) * 0.4 / 0.09;
+                else
+                    scale = 1.4 - (RemovalWait - 0.7) * (RemovalWait - 0.7) * 1.5;
+            }
+
             int x = (int)Math.Round(Position.X);
             int y = (int)Math.Round(Position.Y);
-            int d = (int)Math.Round(Radius * 2);
+            int d = (int)Math.Round(Radius * 2 * scale);
             Rectangle rect = new Rectangle(x, y, d, d);
             int center = Resources.Textures.Circle.Width / 2;
 

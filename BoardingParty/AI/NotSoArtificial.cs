@@ -7,7 +7,7 @@ using System.Text;
 
 namespace BoardingParty.AI
 {
-    class PlayerController : FighterAI
+    class NotSoArtificial : FighterAI
     {
         KeyboardState OldKeys, CurrentKeys;
         private double AttackDelay;

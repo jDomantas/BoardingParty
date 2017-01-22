@@ -43,7 +43,7 @@
     <Compile Include="AI\Chaser.cs" />
     <Compile Include="AI\ComputerController.cs" />
     <Compile Include="AI\FighterAI.cs" />
-    <Compile Include="AI\PlayerController.cs" />
+    <Compile Include="AI\NotSoArtificial.cs" />
     <Compile Include="BoardingGame.cs" />
     <Compile Include="Entities\Barrel.cs" />
     <Compile Include="Entities\Entity.cs" />

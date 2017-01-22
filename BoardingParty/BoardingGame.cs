@@ -53,6 +53,9 @@ namespace BoardingParty
             Resources.Textures.PirateWalk = new Texture2D[8];
             for (int i = 0; i < Resources.Textures.PirateWalk.Length; i++)
                 Resources.Textures.PirateWalk[i] = Content.Load<Texture2D>("pirato/walk" + (i + 1));
+            Resources.Textures.PirateAttack = new Texture2D[5];
+            for (int i = 0; i < Resources.Textures.PirateAttack.Length; i++)
+                Resources.Textures.PirateAttack[i] = Content.Load<Texture2D>("pirato/cut" + (i + 1));
 
             Resources.Textures.Defender = Content.Load<Texture2D>("pirato2");
             Resources.Textures.DefenderOw = Content.Load<Texture2D>("ow2");
@@ -60,6 +63,9 @@ namespace BoardingParty
             Resources.Textures.DefenderWalk = new Texture2D[8];
             for (int i = 0; i < Resources.Textures.DefenderWalk.Length; i++)
                 Resources.Textures.DefenderWalk[i] = Content.Load<Texture2D>("pirato2/walk" + (i + 1));
+            Resources.Textures.DefenderAttack = new Texture2D[5];
+            for (int i = 0; i < Resources.Textures.DefenderAttack.Length; i++)
+                Resources.Textures.DefenderAttack[i] = Content.Load<Texture2D>("pirato2/cut" + (i + 1));
 
             Resources.Textures.Barrel = Content.Load<Texture2D>("barrel");
 
@@ -115,7 +121,7 @@ namespace BoardingParty
 
             Matrix w = Matrix.Identity;
             Vector2 camera = Vector2.Zero;
-            camera = new Vector2((float)world.Gravity.X, (float)world.Gravity.Y) / -30000;
+            camera = new Vector2((float)world.Gravity.X, (float)world.Gravity.Y) * -1 / 30000;
             Matrix view = Matrix.CreateLookAt(new Vector3(camera, 2.4f), Vector3.Zero, Vector3.UnitY);
             Matrix projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.PiOver4, 1, 0.1f, 10000f);
             

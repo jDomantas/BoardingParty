@@ -10,6 +10,8 @@ namespace BoardingParty.Entities
 {
     class Fighter : Entity
     {
+        public const double AttackAnimationLength = 0.25;
+
         public const double Acceleration = 25000;
         public const double AttackRange = 1200;
         public const double TypicalAttackStrength = 7000;
@@ -19,6 +21,10 @@ namespace BoardingParty.Entities
         public bool HasControl;
         public FighterAI AI;
         public double DistanceWalked;
+        public double AttackTimer;
+        public Vector AttackTarget;
+
+        public double LastRotation;
 
         public int Team;
 
@@ -69,18 +75,47 @@ namespace BoardingParty.Entities
                             target.Velocity = Vector.Zero;
                             target.Hit(str * d);
                         }
+
+                        AttackTarget = target.Position;
+                        if (AttackTimer <= 0)
+                            AttackTimer = AttackAnimationLength;
                     }
                 }
+
+                AttackTimer -= dt;
+                if (AttackTimer < 0)
+                    AttackTimer = 0;
+                else
+                    Rotation = Math.Atan2(AttackTarget.Y - Position.Y, AttackTarget.X - Position.X);
             }
-            
+
+            double rotDelta = Rotation - LastRotation;
+            while (rotDelta > Math.PI) rotDelta -= Math.PI * 2;
+            while (rotDelta < -Math.PI) rotDelta += Math.PI * 2;
+
+            double rotSpeed = (Math.Exp(Math.Abs(rotDelta)) * 2 + 3);
+            rotSpeed *= dt;
+            if (rotDelta < -rotSpeed) LastRotation -= rotSpeed;
+            else if (rotDelta > rotSpeed) LastRotation += rotSpeed;
+            else LastRotation = Rotation;
+
             base.Update(dt);
         }
 
         public override void Draw(SpriteBatch sb)
         {
+            double scale = 1;
+            if (Dead)
+            {
+                if (RemovalWait > 0.7)
+                    scale = 1.4 - (RemovalWait - 0.7) * (RemovalWait - 0.7) * 0.4 / 0.09;
+                else
+                    scale = 1.4 - (RemovalWait - 0.7) * (RemovalWait - 0.7) * 1.5;
+            }
+
             int x = (int)Math.Round(Position.X);
             int y = (int)Math.Round(Position.Y);
-            int d = (int)Math.Round(Radius * 2);
+            int d = (int)Math.Round(Radius * 2 * scale);
             Rectangle rect = new Rectangle(x, y, d, d);
             int center = Resources.Textures.Circle.Width / 2;
             
@@ -99,6 +134,15 @@ namespace BoardingParty.Entities
                 d *= 2;
                 rect.Width *= 2;
                 rect.Height *= 2;
+
+                if (AttackTimer > 0)
+                {
+                    int frame = 5 - Math.Min(5, Math.Max(1, (int)Math.Ceiling(AttackTimer / AttackAnimationLength * 5)));
+
+                    texture = AI is NotSoArtificial ?
+                        Resources.Textures.PirateAttack[frame] :
+                        Resources.Textures.DefenderAttack[frame];
+                }
             }
 
             Color color = Color.White * (float)RemovalWait;
@@ -108,10 +152,20 @@ namespace BoardingParty.Entities
                 new Rectangle(x, y, d * 7 / 4, d * 7 / 4),
                 null,
                 color,
-                (float)Rotation - MathHelper.PiOver2 + (HasControl ? 0 : MathHelper.Pi),
+                (float)LastRotation - MathHelper.PiOver2 + (HasControl ? 0 : MathHelper.Pi),
                 new Vector2(texture.Width / 2, texture.Height / 2),
                 SpriteEffects.None,
                 0);
+
+            /*sb.Draw(
+                Resources.Textures.Pixel,
+                new Rectangle(x, y, d * 7 / 4, d * 7 / 4),
+                null,
+                Color.White * 0.7f,
+                (float)LastRotation - MathHelper.PiOver2 + (HasControl ? 0 : MathHelper.Pi),
+                new Vector2(0.5f, 0.5f),
+                SpriteEffects.None,
+                0);*/
 
             /*sb.Draw(
                 Resources.Textures.Circle,

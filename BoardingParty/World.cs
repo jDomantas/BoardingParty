@@ -11,7 +11,7 @@ namespace BoardingParty
 {
     class World
     {
-        public const double SwingTime = 8 * 1.5;
+        public const double SwingTime = 12;
         public const double EdgeBouncines = 0.5;
 
         public Vector Size { get; }
@@ -71,7 +71,7 @@ namespace BoardingParty
 
             while (BarrelCount() < 4 && Random.Next(30) == 0)
             {
-                double x = (Random.NextDouble() * 2 - 1) * Size.X * 0.7;
+                double x = (Random.NextDouble() + 1) * Size.X * 0.4 * (Random.Next(2) * 2 - 1);
                 double vy = 2000 + 500 * Random.NextDouble();
                 Entities.Add(new Barrel(this, 250) { Position = new Vector(x, -Size.Y - 1000), Velocity = new Vector(0, vy) });
             }
