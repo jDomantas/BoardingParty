@@ -86,13 +86,13 @@ namespace BoardingParty.Entities
             
             int walkFrame = (int)Math.Floor(DistanceWalked / 10000) % 8;
 
-            var texture = AI is PlayerController ?
+            var texture = AI is NotSoArtificial ?
                 (HasControl ? Resources.Textures.Pirate : Dead ? Resources.Textures.PirateDead : Resources.Textures.PirateOw) :
                 (HasControl ? Resources.Textures.Defender : Dead ? Resources.Textures.DefenderDead : Resources.Textures.DefenderOw);
 
             if (HasControl && !Dead)
             {
-                texture = AI is PlayerController ?
+                texture = AI is NotSoArtificial ?
                     Resources.Textures.PirateWalk[walkFrame] :
                     Resources.Textures.DefenderWalk[walkFrame];
 
@@ -133,7 +133,7 @@ namespace BoardingParty.Entities
 
         public static Fighter CreatePlayer(World world, Vector position, Vector velocity)
         {
-            return new Fighter(world, new PlayerController(), 1)
+            return new Fighter(world, new NotSoArtificial(), 1)
             {
                 Position = position,
                 Velocity = velocity,
